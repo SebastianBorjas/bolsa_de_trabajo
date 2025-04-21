@@ -12,20 +12,6 @@ body {
     position: relative;
 }
 
-/* Estilo para el logo en la parte superior derecha */
-.background-logo {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1;
-}
-
-.background-logo img {
-    width: 350px;
-    height: auto;
-    opacity: 0.8;
-}
-
 .container {
     position: relative;
     width: 100%;
@@ -101,7 +87,7 @@ body {
 }
 
 .content {
-    margin-left: 60px;
+    margin-left: 0px;
     padding: 40px;
     text-align: center;
 }
@@ -230,4 +216,14 @@ body {
     border-radius: 4px;
     resize: vertical;
     font-family: Arial, sans-serif;
+}
+
+@media screen and (max-width: 480px) {
+
+    .content h1 {
+        font-size: 20px;
+    }
+    .content h2 {
+        font-size: 18px;
+    }
 }

@@ -86,12 +86,9 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Área y Subárea</title>
-    <link rel="stylesheet" href="regarea3.css">
+    <link rel="stylesheet" href="regarea3.css?v=<?php echo time(); ?>">
 </head>
 <body>
-    <div class="background-logo">
-        <img src="../imagenes/logo-fondo.png" alt="Logo de fondo">
-    </div>
     <div class="container">
         <button class="menu-toggle">☰</button>
         <div class="sidebar" id="sidebar">
