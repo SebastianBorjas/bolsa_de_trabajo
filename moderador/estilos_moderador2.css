@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #001164 0%, #003087 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh; /* Cambiado de height a min-height para permitir que el contenido crezca */
+}
+
+.menu-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+}
+
+.menu-toggle:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    z-index: 999;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-buttons {
+    padding: 80px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar-buttons button {
+    width: 100%;
+    padding: 14px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+    text-transform: uppercase;
+}
+
+.sidebar-buttons button:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.content {
+    margin-left: 60px;
+    padding: 40px;
+    text-align: center;
+}
+
+.content h1 {
+    color: #e62e23;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.content h2 {
+    color: #e62e23;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.mensaje {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.mensaje.success {
+    background: rgba(0, 102, 0, 0.1);
+    color: #006600;
+}
+
+.mensaje.error {
+    background: rgba(230, 46, 35, 0.1);
+    color: #e62e23;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #ffffff;
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #001164;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #001164;
+    background: #f0f4f8;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #e62e23;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(230, 46, 35, 0.3);
+}
+
+.form-group select {
+    position: relative;
+    background: #f0f4f8 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="%23e62e23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 12px center;
+    padding-right: 30px;
+}
+
+.download-link {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #e62e23;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+}
+
+.download-link:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.preview-button,
+.send-button {
+    padding: 5px 10px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+    text-transform: uppercase;
+    margin: 2px;
+}
+
+.preview-button:hover,
+.send-button:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}

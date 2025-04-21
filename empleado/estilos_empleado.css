@@ -1,0 +1,562 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #001164 0%, #003087 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Estilo para el logo en el fondo */
+.background-logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1;
+}
+
+.background-logo img {
+    width: 320px;
+    height: auto;
+    opacity: 0.8;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    z-index: 2;
+}
+
+.menu-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+}
+
+.menu-toggle:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    z-index: 999;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-buttons {
+    padding: 80px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar-buttons button {
+    width: 100%;
+    padding: 14px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+    text-transform: uppercase;
+}
+
+.sidebar-buttons button:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.content {
+    margin-left: 60px;
+    padding: 40px;
+    text-align: center;
+}
+
+.content h1 {
+    color: #e62e23;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+}
+
+.mensaje {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.mensaje.success {
+    background: rgba(0, 102, 0, 0.1);
+    color: #006600;
+}
+
+.mensaje.error {
+    background: rgba(230, 46, 35, 0.1);
+    color: #e62e23;
+}
+
+.form-registro {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #ffffff;
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #001164;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #001164;
+    background: #f0f4f8;
+    transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #e62e23;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(230, 46, 35, 0.3);
+}
+
+.form-group select {
+    position: relative;
+    background: #f0f4f8 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="%23e62e23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 12px center;
+    padding-right: 30px;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 15px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+    text-transform: uppercase;
+}
+
+.submit-button:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+/* Estilos para los checkboxes */
+#areas-list div {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+#areas-list input[type="checkbox"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    accent-color: #e62e23;
+    cursor: pointer;
+    appearance: auto;
+}
+
+#areas-list label {
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Estilos para subáreas */
+.subareas-container {
+    margin-top: 20px;
+}
+
+.area-group {
+    border: 2px solid #001164;
+    border-radius: 10px;
+    background: #f0f4f8;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.area-group[data-area-id] > h3 {
+    color: #001164;
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.subareas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.subarea-card {
+    flex: 1 0 calc(33.33% - 10px);
+    background: #ffffff;
+    border: 2px solid #001164;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.subarea-card:hover {
+    transform: scale(1.05);
+}
+
+.subarea-card .info-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #e62e23;
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.selected-grid {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.selected-card {
+    flex: 1 0 calc(33.33% - 10px);
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    text-transform: uppercase;
+    position: relative;
+}
+
+.selected-card:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+.selected-card .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ffffff;
+    color: #e62e23;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.tooltip {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #001164;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Nuevos estilos para las áreas y subáreas */
+.area-select {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.area-header {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #001164;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #001164;
+    background: #f0f4f8 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="%23e62e23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 12px center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.area-header:hover {
+    background: #e6ecef;
+    border-color: #e62e23;
+}
+
+.area-header:active {
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(230, 46, 35, 0.3);
+}
+
+.subarea-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 5px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.subarea-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.subarea-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    accent-color: #e62e23;
+    cursor: pointer;
+}
+
+.subarea-item label {
+    font-size: 15px;
+    color: #000000 !important;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.info-btn {
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+    background: #e62e23;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.info-btn:hover {
+    background: #c4241d;
+    transform: scale(1.1);
+}
+
+.area-group .subareas-grid {
+    display: none;
+}
+
+.area-group.expanded .subareas-grid {
+    display: flex;
+}
+
+.area-group h3 {
+    cursor: pointer;
+    background: #f0f4f8;
+    padding: 10px;
+    border-bottom: 1px solid #001164;
+    margin-bottom: 5px;
+}
+
+/* Media Queries for Mobile Devices */
+@media screen and (max-width: 768px) {
+    .background-logo {
+        top: 10px;
+        left: 10px;
+    }
+
+    .background-logo img {
+        width: 200px;
+        opacity: 0.7;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 20px;
+        padding-top: 240px; /* Space for logo */
+    }
+
+    .content h1 {
+        font-size: 28px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .form-registro {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    .subarea-card,
+    .selected-card {
+        flex: 1 0 100%; /* Stack cards vertically */
+        font-size: 14px;
+    }
+
+    .subareas-grid,
+    .selected-grid {
+        gap: 8px;
+    }
+
+    .area-group[data-area-id] > h3 {
+        font-size: 14px;
+    }
+
+    .sidebar {
+        width: 200px;
+        left: -200px;
+    }
+
+    .sidebar-buttons {
+        padding: 60px 15px 15px;
+        gap: 10px;
+    }
+
+    .sidebar-buttons button {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .menu-toggle {
+        top: 10px;
+        left: 10px;
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+
+    .tooltip {
+        max-width: 90%;
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .background-logo {
+        top: 5px;
+        left: 5px;
+    }
+
+    .background-logo img {
+        width: 150px;
+        opacity: 0.6;
+    }
+
+    .content {
+        padding: 10px;
+        padding-top: 180px; /* Adjusted for smaller logo */
+    }
+
+    .content h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .mensaje {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .subarea-card,
+    .selected-card {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .area-group {
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+
+    .tooltip {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}

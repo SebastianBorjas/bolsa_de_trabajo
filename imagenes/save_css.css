@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #ffffff; /* Fondo blanco */
+}
+
+.login-container {
+    background: #001164; /* Formulario en azul oscuro */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h1 {
+    color: #ffffff; /* Título en blanco */
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #ffffff; /* Etiquetas en blanco */
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ffffff; /* Borde blanco */
+    border-radius: 8px;
+    font-size: 16px;
+    color: #ffffff; /* Texto del input en blanco */
+    background: #001164; /* Fondo del input igual al formulario */
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #e62e23; /* Borde rojo al hacer foco */
+    box-shadow: 0 0 5px rgba(230, 46, 35, 0.2);
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background: #e62e23; /* Botón en rojo de la empresa */
+    color: #ffffff; /* Texto del botón en blanco */
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.login-button:hover {
+    background: #b3241c; /* Rojo más oscuro para el hover */
+}
+
+.error-message {
+    color: #ffffff; /* Mensaje de error en blanco */
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+

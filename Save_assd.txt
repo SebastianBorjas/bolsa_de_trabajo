@@ -1,0 +1,497 @@
+<?php
+require_once 'seguridad_moderador.php'; // En el mismo directorio (moderador/)
+require_once '../conexion.php'; // En curriculums/
+
+// Incluir PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer/Exception.php';
+require 'PHPMailer/PHPMailer.php';
+require 'PHPMailer/SMTP.php';
+
+// Obtener el usuario de la sesión
+$usuario_sesion = $_SESSION['usuario'];
+
+// Obtener el id_usuario desde la tabla usuarios
+$stmt_usuario = $conn->prepare("SELECT id_usuario FROM usuarios WHERE usuario = :usuario AND tipo_usuario = 'moderador'");
+$stmt_usuario->execute(['usuario' => $usuario_sesion]);
+$usuario = $stmt_usuario->fetch(PDO::FETCH_ASSOC);
+
+if ($usuario === false) {
+    die("Error: No se encontró el usuario moderador en la base de datos.");
+}
+
+$id_usuario = $usuario['id_usuario'];
+
+// Obtener el id_plantel del moderador
+$stmt_mod = $conn->prepare("SELECT id_plantel FROM moderadores WHERE id_usuario = :id_usuario");
+$stmt_mod->execute(['id_usuario' => $id_usuario]);
+$moderador = $stmt_mod->fetch(PDO::FETCH_ASSOC);
+
+if ($moderador === false) {
+    die("Error: No se encontró el moderador asociado al usuario actual.");
+}
+
+$id_plantel = $moderador['id_plantel'];
+
+// Consultar áreas del plantel
+$stmt_areas = $conn->prepare("SELECT id_area, nombre_area FROM areas WHERE id_plantel = :id_plantel ORDER BY nombre_area");
+$stmt_areas->execute(['id_plantel' => $id_plantel]);
+$areas = $stmt_areas->fetchAll(PDO::FETCH_ASSOC);
+
+// Consultar empleados del plantel
+$sql = "
+    SELECT 
+        e.id_empleado, 
+        e.nombre_completo, 
+        e.celular, 
+        e.correo, 
+        e.estudios, 
+        e.edad, 
+        e.ruta_curriculum, 
+        e.experiencia,
+        a1.id_area AS id_area1, 
+        a1.nombre_area AS nombre_area1,
+        a2.id_area AS id_area2, 
+        a2.nombre_area AS nombre_area2,
+        a3.id_area AS id_area3, 
+        a3.nombre_area AS nombre_area3
+    FROM empleados e
+    LEFT JOIN areas a1 ON e.area1 = a1.id_area
+    LEFT JOIN areas a2 ON e.area2 = a2.id_area
+    LEFT JOIN areas a3 ON e.area3 = a3.id_area
+    WHERE e.id_plantel = :id_plantel
+    ORDER BY e.nombre_completo
+";
+$stmt = $conn->prepare($sql);
+$stmt->execute(['id_plantel' => $id_plantel]);
+$empleados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Opciones de experiencia
+$opciones_experiencia = [
+    'Sin experiencia',
+    '0-1 años de experiencia',
+    '1-5 años de experiencia',
+    'mas de 5 años de experiencia'
+];
+
+// Lógica para enviar el correo
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['enviar_correo'])) {
+    $destinatario = $_POST['destinatario'] ?? '';
+    $asunto = $_POST['asunto'] ?? '';
+    $id_empleado = $_POST['id_empleado'] ?? null;
+
+    // Depuración temporal
+    echo "<pre>ID Empleado recibido en POST: ";
+    var_dump($id_empleado);
+    echo "</pre>";
+
+    if ($id_empleado === null) {
+        $mensaje_error = "Error: No se recibió el ID del empleado.";
+    } else {
+        // Consulta explícita para un solo empleado
+        $query = "
+            SELECT 
+                e.id_empleado, 
+                e.nombre_completo, 
+                e.celular, 
+                e.correo, 
+                e.estudios, 
+                e.edad, 
+                e.ruta_curriculum, 
+                e.experiencia,
+                a1.nombre_area AS nombre_area1,
+                a2.nombre_area AS nombre_area2,
+                a3.nombre_area AS nombre_area3
+            FROM empleados e
+            LEFT JOIN areas a1 ON e.area1 = a1.id_area
+            LEFT JOIN areas a2 ON e.area2 = a2.id_area
+            LEFT JOIN areas a3 ON e.area3 = a3.id_area
+            WHERE e.id_plantel = :id_plantel
+            AND e.id_empleado = :id_empleado
+        ";
+        $stmt_empleado = $conn->prepare($query);
+        
+        // Vincular parámetros explícitamente
+        $stmt_empleado->bindParam(':id_plantel', $id_plantel, PDO::PARAM_INT);
+        $stmt_empleado->bindParam(':id_empleado', $id_empleado, PDO::PARAM_INT);
+        $stmt_empleado->execute();
+        $empleado = $stmt_empleado->fetch(PDO::FETCH_ASSOC);
+
+        // Depuración temporal
+        echo "<pre>Empleado encontrado: ";
+        var_dump($empleado ? $empleado['id_empleado'] : null);
+        echo "</pre>";
+
+        if ($empleado) {
+            $mail = new PHPMailer(true);
+            try {
+                // Configuración SMTP
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'panfilacaches@gmail.com';
+                $mail->Password = 'mdxf cahe oocz wvjs';
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+
+                // Remitente y destinatario
+                $mail->setFrom('panfilacaches@gmail.com', 'Sistema de Currículums');
+                $mail->addAddress($destinatario);
+
+                // Contenido del correo
+                $mail->isHTML(true);
+                $mail->Subject = $asunto;
+                $mail->Body = "
+                    <h2>Información del Candidato</h2>
+                    <p><strong>Nombre Completo:</strong> " . htmlspecialchars($empleado['nombre_completo']) . "</p>
+                    <p><strong>Celular:</strong> " . htmlspecialchars($empleado['celular']) . "</p>
+                    <p><strong>Correo:</strong> " . htmlspecialchars($empleado['correo']) . "</p>
+                    <p><strong>Estudios:</strong> " . htmlspecialchars($empleado['estudios']) . "</p>
+                    <p><strong>Edad:</strong> " . htmlspecialchars($empleado['edad']) . "</p>
+                    <p><strong>Experiencia:</strong> " . htmlspecialchars($empleado['experiencia']) . "</p>
+                    <p><strong>Área 1:</strong> " . htmlspecialchars($empleado['nombre_area1'] ?? 'N/A') . "</p>
+                    <p><strong>Área 2:</strong> " . htmlspecialchars($empleado['nombre_area2'] ?? 'N/A') . "</p>
+                    <p><strong>Área 3:</strong> " . htmlspecialchars($empleado['nombre_area3'] ?? 'N/A') . "</p>
+                    <p>Adjunto encontrarás el currículum en formato PDF.</p>
+                ";
+
+                // Adjuntar el PDF
+                if ($empleado['ruta_curriculum']) {
+                    $ruta_completa = $_SERVER['DOCUMENT_ROOT'] . '/apps/curriculums/curriculum/' . basename($empleado['ruta_curriculum']);
+                    if (file_exists($ruta_completa)) {
+                        $mail->addAttachment($ruta_completa, 'Curriculum_' . $empleado['nombre_completo'] . '.pdf');
+                    } else {
+                        $mail->Body .= "<p><strong>Nota:</strong> No se pudo adjuntar el PDF porque no se encontró en el servidor.</p>";
+                        error_log("Error: El archivo no existe en $ruta_completa");
+                    }
+                }
+
+                $mail->send();
+                $mensaje_exito = "Correo enviado con éxito.";
+            } catch (Exception $e) {
+                $mensaje_error = "Error al enviar el correo: " . $mail->ErrorInfo;
+            }
+        } else {
+            $mensaje_error = "No se encontró el empleado con ID: $id_empleado";
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Currículums</title>
+    <link rel="stylesheet" href="estilos_moderador.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .email-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .email-form label {
+            font-weight: bold;
+        }
+        .email-form input, .email-form textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .email-form button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .email-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="menu-toggle">☰</button>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-buttons">
+                <button onclick="window.location.href='registrar_area.php'">Registrar área</button>
+                <button onclick="window.location.href='inicio_moderador.php'">Volver al Inicio</button>
+                <button onclick="window.location.href='../logout.php'">Cerrar Sesión</button>
+            </div>
+        </div>
+        <div class="content">
+            <h1>Currículums</h1>
+
+            <!-- Mensajes de éxito o error -->
+            <?php if (isset($mensaje_exito)): ?>
+                <p class="mensaje success"><?php echo $mensaje_exito; ?></p>
+            <?php elseif (isset($mensaje_error)): ?>
+                <p class="mensaje error"><?php echo $mensaje_error; ?></p>
+            <?php endif; ?>
+
+            <!-- Filtros -->
+            <div class="filter-group" style="max-width: 900px; margin-bottom: 30px; display: flex; gap: 20px;">
+                <div class="form-group">
+                    <label for="buscarNombre">Buscar por Nombre:</label>
+                    <input type="text" id="buscarNombre" placeholder="Ingresa nombre" class="search-input">
+                </div>
+                <div class="form-group">
+                    <label for="filtroArea">Filtrar por Área:</label>
+                    <select id="filtroArea" class="filter-select">
+                        <option value="">Todas las áreas</option>
+                        <?php foreach ($areas as $area): ?>
+                            <option value="<?php echo $area['id_area']; ?>">
+                                <?php echo htmlspecialchars($area['nombre_area']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filtroExperiencia">Filtrar por Experiencia:</label>
+                    <select id="filtroExperiencia" class="filter-select">
+                        <option value="">Todas las experiencias</option>
+                        <?php foreach ($opciones_experiencia as $experiencia): ?>
+                            <option value="<?php echo htmlspecialchars($experiencia); ?>">
+                                <?php echo htmlspecialchars($experiencia); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista de empleados -->
+            <?php if (empty($empleados)): ?>
+                <p class="mensaje error">No hay empleados registrados para este plantel.</p>
+            <?php else: ?>
+                <div class="planteles-container">
+                    <div class="plantel-table" style="flex: 1 1 100%; max-width: 100%;">
+                        <h2>Lista de Candidatos</h2>
+                        <table id="empleadosTable">
+                            <thead>
+                                <tr>
+                                    <th>Nombre Completo</th>
+                                    <th>Celular</th>
+                                    <th>Correo</th>
+                                    <th>Estudios</th>
+                                    <th>Edad</th>
+                                    <th>Experiencia</th>
+                                    <th>Área 1</th>
+                                    <th>Área 2</th>
+                                    <th>Área 3</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($empleados as $empleado): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($empleado['nombre_completo']); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['celular']); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['correo']); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['estudios']); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['edad']); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['experiencia']); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['nombre_area1'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['nombre_area2'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($empleado['nombre_area3'] ?? 'N/A'); ?></td>
+                                        <td>
+                                            <?php if ($empleado['ruta_curriculum']): ?>
+                                                <button class="preview-button" onclick="mostrarVistaPrevia('/apps/curriculums/curriculum/<?php echo htmlspecialchars(basename($empleado['ruta_curriculum'])); ?>')">Previsualizar</button>
+                                                <a href="/apps/curriculums/curriculum/<?php echo htmlspecialchars(basename($empleado['ruta_curriculum'])); ?>" download class="download-link">Descargar</a>
+                                                <button class="send-button" onclick="mostrarFormularioCorreo('<?php echo $empleado['id_empleado']; ?>')">Enviar</button>
+                                            <?php else: ?>
+                                                No disponible
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Modal para previsualización -->
+    <div id="vistaPreviaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarVistaPrevia()">×</span>
+            <iframe id="vistaPreviaIframe" src=""></iframe>
+        </div>
+    </div>
+
+    <!-- Modal para formulario de correo -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarFormularioCorreo()">×</span>
+            <h2>Enviar Currículum por Correo</h2>
+            <form method="POST" class="email-form" id="emailForm">
+                <input type="hidden" name="id_empleado" id="id_empleado">
+                <input type="hidden" name="enviar_correo" value="1">
+                <div>
+                    <label for="destinatario">Correo Destinatario:</label>
+                    <input type="email" name="destinatario" id="destinatario" required>
+                </div>
+                <div>
+                    <label for="asunto">Asunto:</label>
+                    <input type="text" name="asunto" id="asunto" required>
+                </div>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js_moderador.js"></script>
+    <script>
+        const buscarNombre = document.getElementById('buscarNombre');
+        const filtroArea = document.getElementById('filtroArea');
+        const filtroExperiencia = document.getElementById('filtroExperiencia');
+        const empleadosTable = document.getElementById('empleadosTable').getElementsByTagName('tbody')[0];
+        const empleadosOriginales = <?php echo json_encode($empleados); ?>;
+        const vistaPreviaModal = document.getElementById('vistaPreviaModal');
+        const emailModal = document.getElementById('emailModal');
+        const iframe = document.getElementById('vistaPreviaIframe');
+
+        // Filtrar empleados
+        function filtrarEmpleados() {
+            const texto = buscarNombre.value.toLowerCase();
+            const idArea = filtroArea.value;
+            const experiencia = filtroExperiencia.value;
+            const empleadosFiltrados = empleadosOriginales.filter(empleado => {
+                const coincideNombre = empleado.nombre_completo.toLowerCase().includes(texto);
+                const coincideArea = !idArea || 
+                    empleado.id_area1 == idArea || 
+                    empleado.id_area2 == idArea || 
+                    empleado.id_area3 == idArea;
+                const coincideExperiencia = !experiencia || empleado.experiencia === experiencia;
+                return coincideNombre && coincideArea && coincideExperiencia;
+            });
+            mostrarEmpleados(empleadosFiltrados);
+        }
+
+        // Mostrar empleados en la tabla
+        function mostrarEmpleados(empleados) {
+            empleadosTable.innerHTML = '';
+            empleados.forEach(empleado => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${empleado.nombre_completo}</td>
+                    <td>${empleado.celular}</td>
+                    <td>${empleado.correo}</td>
+                    <td>${empleado.estudios}</td>
+                    <td>${empleado.edad}</td>
+                    <td>${empleado.experiencia}</td>
+                    <td>${empleado.nombre_area1 || 'N/A'}</td>
+                    <td>${empleado.nombre_area2 || 'N/A'}</td>
+                    <td>${empleado.nombre_area3 || 'N/A'}</td>
+                    <td>
+                        ${empleado.ruta_curriculum ? 
+                            `<button class="preview-button" onclick="mostrarVistaPrevia('/apps/curriculums/curriculum/${encodeURIComponent(basename(empleado.ruta_curriculum))}')">Previsualizar</button>
+                             <a href="/apps/curriculums/curriculum/${encodeURIComponent(basename(empleado.ruta_curriculum))}" download class="download-link">Descargar</a>
+                             <button class="send-button" onclick="mostrarFormularioCorreo('${empleado.id_empleado}')">Enviar</button>` 
+                            : 'No disponible'}
+                    </td>
+                `;
+                empleadosTable.appendChild(row);
+            });
+        }
+
+        // Función auxiliar para basename
+        function basename(path) {
+            return path.split('/').pop();
+        }
+
+        // Mostrar vista previa
+        function mostrarVistaPrevia(ruta) {
+            iframe.src = ruta;
+            vistaPreviaModal.style.display = 'flex';
+        }
+
+        // Cerrar vista previa
+        function cerrarVistaPrevia() {
+            vistaPreviaModal.style.display = 'none';
+            iframe.src = '';
+        }
+
+        // Mostrar formulario de correo
+        function mostrarFormularioCorreo(id_empleado) {
+            console.log('ID Empleado seleccionado:', id_empleado); // Depuración
+            const idEmpleadoInput = document.getElementById('id_empleado');
+            if (idEmpleadoInput) {
+                idEmpleadoInput.value = id_empleado;
+                console.log('Valor asignado al campo oculto:', idEmpleadoInput.value); // Depuración
+            } else {
+                console.error('No se encontró el elemento con ID "id_empleado"');
+            }
+            emailModal.style.display = 'flex';
+        }
+
+        // Cerrar formulario de correo
+        function cerrarFormularioCorreo() {
+            emailModal.style.display = 'none';
+            const idEmpleadoInput = document.getElementById('id_empleado');
+            if (idEmpleadoInput) idEmpleadoInput.value = ''; // Limpiar
+            document.getElementById('destinatario').value = '';
+            document.getElementById('asunto').value = '';
+        }
+
+        // Eventos de filtro
+        buscarNombre.addEventListener('input', filtrarEmpleados);
+        filtroArea.addEventListener('change', filtrarEmpleados);
+        filtroExperiencia.addEventListener('change', filtrarEmpleados);
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target == vistaPreviaModal) {
+                cerrarVistaPrevia();
+            } else if (event.target == emailModal) {
+                cerrarFormularioCorreo();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #001164 0%, #003087 100%);
+    position: relative;
+}
+
+/* Estilo para el logo en la parte superior izquierda */
+.background-logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1;
+}
+
+.background-logo img {
+    width: 350px;
+    height: auto;
+    opacity: 0.8;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+    z-index: 2;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Espacio entre el botón y el label */
+}
+
+.main-button {
+    width: 300px;
+    height: 400px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.main-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: #e0e0e0;
+}
+
+.curriculum-btn {
+    background-image: url('../imagenes/ver.png');
+    background-size: 50%;
+    overflow:hidden;
+}
+
+.curriculum-btn:hover {
+    background-image: url('../imagenes/ver_hover.png');
+    background-size: 55%;
+    background-repeat: no-repeat;
+    background-position: center;
+    -webkit-transform:scale(1.1);transform:scale(1.1);
+}
+
+.area-btn {
+    background-image: url('../imagenes/registrar.png');
+    background-size: 50%;
+    overflow:hidden;
+}
+
+.area-btn:hover {
+    background-image: url('../imagenes/registrar_hover.png');
+    background-size: 55%;
+    background-repeat: no-repeat;
+    background-position: center;
+    -webkit-transform:scale(1.1);transform:scale(1.1);
+}
+
+.button-label {
+    color: #ffffff; /* Color blanco para que contraste con el fondo */
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.logout-btn {
+    width: 150px;
+    height: 40px;
+    background: #e62e23;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #c4241d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.welcome-text {
+    text-align: center;
+}
+
+.welcome-text h1 {
+    color: #e62e23;
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.welcome-text p {
+    color: #FFFF;
+    font-size: 16px;
+    margin-top: 10px;
+}

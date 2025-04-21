@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #001164 0%, #003087 100%); /* Gradiente azul */
+    position: relative; /* Para posicionar el logo de fondo */
+}
+
+/* Estilo para el logo en el fondo */
+.background-logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1; /* Debajo del formulario */
+}
+
+.background-logo img {
+    width: 420px; /* Tamaño no muy grande */
+    height: auto;
+    opacity: 0.8; /* Ligeramente transparente para que no distraiga */
+}
+
+/* Contenedor del formulario */
+.login-container {
+    background: rgba(255, 255, 255, 0.95); /* Blanco semitransparente */
+    padding: 50px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    transition: transform 0.3s ease;
+    position: relative; /* Para posicionar el logo del formulario */
+    z-index: 2; /* Encima del logo de fondo */
+}
+
+.login-container:hover {
+    transform: translateY(-5px);
+}
+
+/* Estilo para el logo dentro del formulario */
+.form-logo {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+.form-logo img {
+    width: 80px; /* Tamaño pequeño */
+    height: auto;
+}
+
+/* Ajuste del encabezado para evitar solapamiento con el logo */
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-top: 40px; /* Espacio extra para no tapar el logo */
+}
+
+.login-header h1 {
+    color: #e62e23; /* Título en rojo */
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    color: #001164; /* Azul oscuro para etiquetas */
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #001164; /* Borde azul oscuro */
+    border-radius: 10px;
+    font-size: 16px;
+    color: #001164; /* Texto azul oscuro */
+    background: #f0f4f8; /* Fondo gris claro */
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #e62e23; /* Borde rojo al hacer foco */
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(230, 46, 35, 0.3);
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background: #e62e23; /* Botón rojo */
+    color: #ffffff; /* Texto blanco */
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 46, 35, 0.4);
+}
+
+.login-button:hover {
+    background: #c4241d; /* Rojo más oscuro para hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 46, 35, 0.6);
+}
+
+.error-message {
+    color: #e62e23; /* Mensaje de error en rojo */
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.register-link label {
+    color: #001164; /* Azul oscuro */
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.register-link a {
+    color: #e62e23; /* Rojo para el enlace */
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
