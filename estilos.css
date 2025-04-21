@@ -164,8 +164,7 @@ body {
     .background-logo {
         position: top;
         top: 15px;
-        left: 15px;
-        z-index: 1;
+        left: 15px
     }
 
     .login-container {
