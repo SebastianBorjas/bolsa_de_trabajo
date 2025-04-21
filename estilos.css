@@ -153,3 +153,21 @@ body {
 .register-link a:hover {
     text-decoration: underline;
 }
+
+@media screen and (max-width: 480px) {
+
+    .background-logo img {
+        max-width: 100px; /* Even smaller logo to minimize overlap */
+        opacity: 0.8;
+    }
+    .background-logo {
+        position: top;
+        top: 15px;
+        left: 15px;
+        z-index: 1;
+    }
+
+    .login-container {
+        width: 80%;
+    }
+}
