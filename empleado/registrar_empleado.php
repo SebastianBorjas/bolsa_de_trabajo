@@ -1,4 +1,5 @@
 <?php
+session_start(); // Start session for message handling
 require_once '../conexion.php';
 
 require 'PHPMailer/Exception.php';
@@ -7,6 +8,12 @@ require 'PHPMailer/SMTP.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
+// Check for session message
+if (isset($_SESSION['mensaje'])) {
+    $mensaje = $_SESSION['mensaje'];
+    unset($_SESSION['mensaje']); // Clear the message after displaying
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_plantel = $_POST['id_plantel'];
@@ -25,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     error_log("Subáreas seleccionadas: " . print_r($subareas_seleccionadas, true));
 
-    // Validar correo (ahora obligatorio)
+    // Validar correo (obligatorio)
     if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "Error: Debes proporcionar un correo válido.";
     }
@@ -48,13 +55,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $file_type = mime_content_type($file_tmp);
             $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
             $file_size = $_FILES['curriculum']['size'];
-            $max_size = 4 * 1024 * 1024; // 4MB in bytes
+            $max_size = 2 * 1024 * 1024; // 2MB in bytes
 
             // Verificar tipo de archivo y tamaño
             if ($file_extension !== 'pdf' || $file_type !== 'application/pdf') {
                 $mensaje = "Error: Solo se permiten archivos PDF.";
             } elseif ($file_size > $max_size) {
-                $mensaje = "Error: El archivo excede el límite de 4MB.";
+                $mensaje = "Error: El archivo excede el límite de 2MB.";
             } else {
                 $ruta_curriculum = $curriculum_dir . '/' . uniqid() . '_' . basename($file_name);
                 if (move_uploaded_file($file_tmp, $ruta_curriculum)) {
@@ -80,9 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt->bindParam(':fecha_registro', $fecha_registro);
                         $stmt->execute();
 
-                        $mensaje = "Empleado registrado exitosamente.";
-
-                        // Send confirmation email (now mandatory)
+                        // Send confirmation email
                         $email_config = include('email_config.php');
                         $mail = new PHPMailer(true);
                         try {
@@ -114,6 +119,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             error_log("Error al enviar correo: {$mail->ErrorInfo}");
                             // Don't fail the registration if email sending fails
                         }
+
+                        // Store success message in session and redirect
+                        $_SESSION['mensaje'] = "Registrado exitosamente.";
+                        header("Location: " . $_SERVER['PHP_SELF']);
+                        exit();
+
                     } catch(PDOException $e) {
                         $mensaje = "Error: " . $e->getMessage();
                         if ($ruta_curriculum && file_exists($ruta_curriculum)) {
@@ -142,7 +153,105 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Registrar Curriculum</title>
    <link rel="stylesheet" href="estilos_empleado.css?v=<?php echo time(); ?>">
-
+   <style>
+      /* Estilos adicionales para la sección dinámica de subáreas */
+      .subareas-container {
+          margin-top: 20px;
+      }
+      .area-group {
+          border: 2px solid #001164;
+          border-radius: 10px;
+          background: #f0f4f8;
+          padding: 10px;
+          margin-bottom: 15px;
+      }
+      .area-group[data-area-id] > h3 {
+          color: #001164;
+          font-size: 16px;
+          margin-bottom: 10px;
+      }
+      .subareas-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+      }
+      .subarea-card {
+          flex: 1 0 calc(33.33% - 10px);
+          background: #ffffff;
+          border: 2px solid #001164;
+          border-radius: 10px;
+          padding: 10px;
+          text-align: center;
+          cursor: pointer;
+          position: relative;
+          transition: transform 0.2s;
+      }
+      .subarea-card:hover {
+          transform: scale(1.05);
+      }
+      .subarea-card .info-icon {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          background: #e62e23;
+          color: #fff;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          cursor: pointer;
+      }
+      .selected-grid {
+          margin-top: 20px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+      }
+      .selected-card {
+          background: #007bff;
+          color: #fff;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+          text-transform: uppercase;
+      }
+      .selected-card:hover {
+          background: #0056b3;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+      }
+      .selected-card .remove-btn {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          background: #ffffff;
+          color: #e62e23;
+          border: none;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+      }
+      .tooltip {
+          position: absolute;
+          background: #ffffff;
+          border: 1px solid #001164;
+          padding: 5px 10px;
+          border-radius: 5px;
+          font-size: 13px;
+          z-index: 100;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+   </style>
 </head>
 <body>
    <div class="background-logo">
@@ -224,7 +333,7 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
                </select>
             </div>
             <div class="form-group">
-               <label for="curriculum">Curriculum (solo PDF, máximo 4MB):</label>
+               <label for="curriculum">Curriculum (solo PDF, máximo 2MB):</label>
                <input type="file" id="curriculum" name="curriculum" accept=".pdf" required>
             </div>
             <div class="form-group">
@@ -237,17 +346,17 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
       </div>
    </div>                
    <script>
-      // Validación del archivo: solo se permiten PDF y tamaño máximo de 4MB
+      // Validación del archivo: solo se permiten PDF y tamaño máximo de 2MB
       document.getElementById('curriculum').addEventListener('change', function(event) {
          const file = event.target.files[0];
          if (file) {
             const extension = file.name.split('.').pop().toLowerCase();
-            const maxSize = 4 * 1024 * 1024; // 4MB en bytes
+            const maxSize = 2 * 1024 * 1024; // 2MB en bytes
             if (extension !== 'pdf') {
                alert('Error: Solo se permiten archivos PDF.');
                event.target.value = '';
             } else if (file.size > maxSize) {
-               alert('Error: El archivo excede el límite de 4MB.');
+               alert('Error: El archivo excede el límite de 2MB.');
                event.target.value = '';
             }
          }
