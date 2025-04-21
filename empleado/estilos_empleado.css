@@ -454,6 +454,11 @@ body {
 
 @media screen and (max-width: 480px) {
     body {
-        background: red; /* Fondo rojo en móviles pequeños */
+        background: linear-gradient(135deg, #001164 0%, #003087 100%);
+    }
+
+    .background-logo img {
+        max-width: 100px; /* Even smaller logo to minimize overlap */
+        opacity: 0.5;
     }
 }
