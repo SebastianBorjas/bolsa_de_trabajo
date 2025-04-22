@@ -54,8 +54,8 @@ body {
 }
 
 .main-button {
-    width: 300px;
-    height: 400px;
+    width: 280px;
+    height: 380px;
     background: white;
     border: none;
     cursor: pointer;
@@ -65,6 +65,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    margin-bottom: 10px;
 }
 
 .main-button:hover {
