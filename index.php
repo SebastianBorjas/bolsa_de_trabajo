@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="icon" type="image/x-icon" href="imagenes/logo-formulario.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
     <link rel="stylesheet" href="estilos.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet"> <!-- Para Roboto -->
-    <link rel="icon" type="image/x-icon" href="imagenes/logo-formulario.png">
+    
 </head>
 <body>
     <!-- Logo en el fondo de la página convertido en botón -->

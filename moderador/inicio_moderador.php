@@ -5,11 +5,12 @@ require_once 'seguridad_moderador.php';
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="icon" type="image/x-icon" href="../imagenes/logo-formulario.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Moderador</title>
     <link rel="stylesheet" href="inicio1.css?v=<?php echo time(); ?>">
-    <link rel="icon" type="image/x-icon" href="../imagenes/logo-formulario.png">
+    
 </head>
 <body>
     <div class="background-logo">
