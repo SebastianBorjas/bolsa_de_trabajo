@@ -315,7 +315,7 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
                <input type="email" id="correo" name="correo" required placeholder="correo@ejemplo.com">
             </div>
             <div class="form-group">
-               <label for="celular">Télefono fkn brandon:</label>
+               <label for="celular">Teléfono:</label>
                <input type="tel" id="celular" name="celular" required placeholder="1234567890">
             </div>
             <div class="form-group">
