@@ -167,8 +167,8 @@ body {
 @media screen and (max-width: 480px) {
 
     .main-button {
-        width: 130px;
-        height: 170px;
+        width: 90px;
+        height: 140px;
     }
 
     .welcome-text h1 {
