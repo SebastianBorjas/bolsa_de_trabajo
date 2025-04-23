@@ -31,6 +31,10 @@ require_once 'seguridad_moderador.php';
                 <button class="main-button area-btn" onclick="window.location.href='registrar_area.php'"></button>
                 <label class="button-label">Registrar Área</label>
             </div>
+            <div class="button-wrapper">
+                <button class="main-button sugerencia-btn" onclick="window.location.href='ver_sugerencias.php'"></button>
+                <label class="button-label">Ver Sugerencias</label>
+            </div>
         </div>
         <button class="logout-btn" onclick="window.location.href='../logout.php'">Cerrar Sesión</button>
     </div>

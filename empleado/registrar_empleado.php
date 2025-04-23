@@ -28,18 +28,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $experiencia = $_POST['experiencia'];
     $dispuesto = $_POST['dispuesto'];
     $subareas_seleccionadas = isset($_POST['areas']) ? $_POST['areas'] : [];
+    $sugerencia = isset($_POST['sugerencia']) ? trim($_POST['sugerencia']) : '';
     $fecha_registro = date('Y-m-d');
 
     error_log("Subáreas seleccionadas: " . print_r($subareas_seleccionadas, true));
+    error_log("Sugerencia: " . $sugerencia);
 
     // Validar correo (obligatorio)
     if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "Error: Debes proporcionar un correo válido.";
     }
 
-    // Validar subáreas
-    if (count($subareas_seleccionadas) < 1) {
-        $mensaje = "Error: Debes seleccionar al menos 1 subárea.";
+    // Validar subáreas o sugerencia
+    if (count($subareas_seleccionadas) < 1 && empty($sugerencia)) {
+        $mensaje = "Error: Debes seleccionar al menos 1 subárea o ingresar una sugerencia.";
     } elseif (count($subareas_seleccionadas) > 3) {
         $mensaje = "Error: No puedes seleccionar más de 3 subáreas.";
     } else {
@@ -66,12 +68,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $ruta_curriculum = $curriculum_dir . '/' . uniqid() . '_' . basename($file_name);
                 if (move_uploaded_file($file_tmp, $ruta_curriculum)) {
                     try {
-                        $area1 = $subareas_seleccionadas[0];
+                        $area1 = isset($subareas_seleccionadas[0]) ? $subareas_seleccionadas[0] : null;
                         $area2 = isset($subareas_seleccionadas[1]) ? $subareas_seleccionadas[1] : null;
                         $area3 = isset($subareas_seleccionadas[2]) ? $subareas_seleccionadas[2] : null;
+                        $asignado = !empty($sugerencia) ? 'no' : 'sí';
 
-                        $stmt = $conn->prepare("INSERT INTO empleados (id_plantel, nombre_completo, celular, correo, estudios, edad, ruta_curriculum, experiencia, area1, area2, area3, dispuesto, fecha_registro) 
-                            VALUES (:id_plantel, :nombre_completo, :celular, :correo, :estudios, :edad, :ruta_curriculum, :experiencia, :area1, :area2, :area3, :dispuesto, :fecha_registro)");
+                        $stmt = $conn->prepare("INSERT INTO empleados (id_plantel, nombre_completo, celular, correo, estudios, edad, ruta_curriculum, experiencia, area1, area2, area3, dispuesto, fecha_registro, asignado, sugerencia) 
+                            VALUES (:id_plantel, :nombre_completo, :celular, :correo, :estudios, :edad, :ruta_curriculum, :experiencia, :area1, :area2, :area3, :dispuesto, :fecha_registro, :asignado, :sugerencia)");
                         $stmt->bindParam(':id_plantel', $id_plantel);
                         $stmt->bindParam(':nombre_completo', $nombre_completo);
                         $stmt->bindParam(':celular', $celular);
@@ -85,6 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt->bindParam(':area3', $area3, PDO::PARAM_INT);
                         $stmt->bindParam(':dispuesto', $dispuesto);
                         $stmt->bindParam(':fecha_registro', $fecha_registro);
+                        $stmt->bindParam(':asignado', $asignado);
+                        $stmt->bindParam(':sugerencia', $sugerencia);
                         $stmt->execute();
 
                         // Send confirmation email
@@ -252,6 +257,18 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
           z-index: 100;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       }
+      .sugerencia-container {
+          margin-top: 20px;
+          display: none;
+      }
+      .sugerencia-container textarea {
+          width: 100%;
+          height: 100px;
+          padding: 10px;
+          border: 2px solid #001164;
+          border-radius: 10px;
+          resize: none;
+      }
    </style>
 </head>
 <body>
@@ -338,10 +355,16 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
                <input type="file" id="curriculum" name="curriculum" accept=".pdf" required>
             </div>
             <div class="form-group">
-               <label for="subareas">Subáreas (selecciona al menos 1, máximo 3):</label>
-               <button type="submit" class="submit-button">Registrar</button>
+               <label for="subareas">Subáreas (selecciona al menos 1, máximo 3, o ingresa una sugerencia):</label>
                <div id="selected-subareas" class="selected-grid"></div>
                <div id="available-subareas" class="subareas-container"></div>
+               <div class="area-group" id="otra-profesion-group">
+                  <h3 id="otra-profesion-title">Otra profesión?</h3>
+                  <div class="sugerencia-container" id="sugerencia-container">
+                     <textarea id="sugerencia" name="sugerencia" placeholder="Ingresa una sugerencia de área o subárea"></textarea>
+                  </div>
+               </div>
+               <button type="submit" class="submit-button">Registrar</button>
             </div>
          </form>
       </div>
@@ -367,17 +390,17 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
       let selectedSubareas = {};
 
       function cargarSubareas() {
-         const idPlantel = document.getElementById('id_plantel').value;
          const availableContainer = document.getElementById('available-subareas');
          availableContainer.innerHTML = '';
          document.getElementById('selected-subareas').innerHTML = '';
          selectedSubareas = {};
 
-         fetch('obtener_areas.php?id_plantel=' + idPlantel)
+         // Cargar áreas y subáreas solo para id_plantel = 1
+         fetch('obtener_areas.php?id_plantel=1')
             .then(response => response.json())
             .then(data => {
                if (!data.areas || data.areas.length === 0) {
-                  availableContainer.innerHTML = '<p>No hay subáreas disponibles para esta localidad.</p>';
+                  availableContainer.innerHTML = '<p>No hay subáreas disponibles.</p>';
                   return;
                }
                data.areas.forEach(area => {
@@ -510,13 +533,31 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
          }, 3000);
       }
 
-      document.getElementById('id_plantel').addEventListener('change', function() {
+      // Cargar subáreas al iniciar la página
+      document.addEventListener('DOMContentLoaded', function() {
          cargarSubareas();
+         // Configurar el evento para "Otra profesión"
+         const otraProfesionTitle = document.getElementById('otra-profesion-title');
+         const sugerenciaContainer = document.getElementById('sugerencia-container');
+         otraProfesionTitle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.querySelectorAll('.area-group.expanded').forEach(group => {
+               if (group !== document.getElementById('otra-profesion-group')) {
+                  group.classList.remove('expanded');
+               }
+            });
+            document.getElementById('otra-profesion-group').classList.toggle('expanded');
+            sugerenciaContainer.style.display = document.getElementById('otra-profesion-group').classList.contains('expanded') ? 'block' : 'none';
+         });
       });
+
       document.addEventListener('click', function(e) {
          if (!e.target.closest('.area-group')) {
             document.querySelectorAll('.area-group.expanded').forEach(group => {
                group.classList.remove('expanded');
+               if (group.id === 'otra-profesion-group') {
+                  document.getElementById('sugerencia-container').style.display = 'none';
+               }
             });
          }
       });

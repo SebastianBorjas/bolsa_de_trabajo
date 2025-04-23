@@ -102,6 +102,20 @@ body {
     -webkit-transform:scale(1.1);transform:scale(1.1);
 }
 
+.sugerencia-btn {
+    background-image: url('../imagenes/sugerencia.png');
+    background-size: 50%;
+    overflow:hidden;
+}
+
+.sugerencia-btn:hover {
+    background-image: url('../imagenes/sugerencia_hover.png');
+    background-size: 55%;
+    background-repeat: no-repeat;
+    background-position: center;
+    -webkit-transform:scale(1.1);transform:scale(1.1);
+}
+
 .button-label {
     color: #ffffff; /* Color blanco para que contraste con el fondo */
     font-size: 16px;

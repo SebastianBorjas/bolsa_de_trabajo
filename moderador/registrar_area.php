@@ -95,6 +95,7 @@ try {
         <div class="sidebar" id="sidebar">
             <div class="sidebar-buttons">
                 <button onclick="window.location.href='ver_curriculums.php'">Ver Currículums</button>
+                <button onclick="window.location.href='ver_sugerencias.php'">Ver Sugerencias</button>
                 <button onclick="window.location.href='inicio_moderador.php'">Volver al Inicio</button>
                 <button onclick="window.location.href='../logout.php'">Cerrar Sesión</button>
             </div>
