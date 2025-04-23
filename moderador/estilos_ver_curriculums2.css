@@ -139,6 +139,8 @@
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     overflow-x: auto; /* Permitir desplazamiento horizontal si la tabla es muy ancha */
+    max-height: 80vh; /* Limitar la altura máxima de la tabla */
+    overflow-y: auto; /* Permitir desplazamiento vertical si la tabla es muy alta */
 }
 
 .plantel-table table {
