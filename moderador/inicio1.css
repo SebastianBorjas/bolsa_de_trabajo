@@ -167,8 +167,8 @@ body {
 @media screen and (max-width: 480px) {
 
     .main-button {
-        width: 150px;
-        height: 200px;
+        width: 130px;
+        height: 170px;
     }
 
     .welcome-text h1 {
@@ -183,5 +183,9 @@ body {
     .background-logo img {
         width: 160px;
         opacity: 0.8;
+    }
+
+    .button-label {
+        font-size: 10px;
     }
 }

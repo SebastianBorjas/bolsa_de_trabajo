@@ -14,28 +14,15 @@ if ($usuario === false) {
     die("Error: No se encontró el usuario moderador en la base de datos.");
 }
 
-$id_usuario = $usuario['id_usuario'];
-
-// Obtener el id_plantel del moderador (predeterminado)
-$stmt_mod = $conn->prepare("SELECT id_plantel FROM moderadores WHERE id_usuario = :id_usuario");
-$stmt_mod->execute(['id_usuario' => $id_usuario]);
-$moderador = $stmt_mod->fetch(PDO::FETCH_ASSOC);
-
-if ($moderador === false) {
-    die("Error: No se encontró el moderador asociado al usuario actual.");
-}
-
-$id_plantel_predeterminado = $moderador['id_plantel'];
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['registrar_area'])) {
         // Registro de área
         $nombre_area = trim($_POST['nombre_area']);
-        $id_plantel = $_POST['id_plantel'];
+        $id_plantel = 1; // Fijar id_plantel a 1
         
         try {
             $stmt = $conn->prepare("INSERT INTO areas (id_plantel, nombre_area) VALUES (:id_plantel, :nombre)");
-            $stmt->bindParam(':id_plantel', $id_plantel);
+            $stmt->bindParam(':id_plantel', $id_plantel, PDO::PARAM_INT);
             $stmt->bindParam(':nombre', $nombre_area);
             $stmt->execute();
             $mensaje_area = "Área registrada exitosamente";
@@ -45,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST['registrar_subarea'])) {
         // Registro de subárea
         $nombre_subarea = trim($_POST['nombre_subarea']);
-        $descripcion = trim($_POST['descripcion']); // Nuevo campo
+        $descripcion = trim($_POST['descripcion']);
         $id_area = $_POST['id_area'];
         
         try {
@@ -61,19 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Obtener los planteles para el select de áreas
+// Obtener las áreas para el select de subáreas (solo de id_plantel = 1)
 try {
-    $stmt_planteles = $conn->prepare("SELECT id_plantel, nombre_plantel FROM planteles ORDER BY nombre_plantel");
-    $stmt_planteles->execute();
-    $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
-} catch(PDOException $e) {
-    $mensaje_area = "Error al cargar planteles: " . $e->getMessage();
-}
-
-// Obtener las áreas para el select de subáreas (inicialmente solo del plantel predeterminado)
-try {
-    $stmt_areas = $conn->prepare("SELECT id_area, nombre_area FROM areas WHERE id_plantel = :id_plantel ORDER BY nombre_area");
-    $stmt_areas->execute(['id_plantel' => $id_plantel_predeterminado]);
+    $stmt_areas = $conn->prepare("SELECT id_area, nombre_area FROM areas WHERE id_plantel = 1 ORDER BY nombre_area");
+    $stmt_areas->execute();
     $areas = $stmt_areas->fetchAll(PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
     $mensaje_subarea = "Error al cargar áreas: " . $e->getMessage();
@@ -111,18 +89,6 @@ try {
                 </p>
             <?php endif; ?>
             <form action="" method="POST" class="form-registro">
-                <div class="form-group">
-                    <label for="id_plantel">Plantel:</label>
-                    <select id="id_plantel" name="id_plantel" required>
-                        <option value="">Selecciona un plantel</option>
-                        <?php foreach ($planteles as $plantel): ?>
-                            <option value="<?php echo $plantel['id_plantel']; ?>" 
-                                <?php echo $plantel['id_plantel'] == $id_plantel_predeterminado ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($plantel['nombre_plantel']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
                 <div class="form-group">
                     <label for="nombre_area">Nombre del Área:</label>
                     <input type="text" id="nombre_area" name="nombre_area" required placeholder="Ingresa el nombre del área">
@@ -162,39 +128,5 @@ try {
         </div>
     </div>
     <script src="js_moderador.js"></script>
-    <script>
-        // Actualizar las áreas dinámicamente cuando se cambia el plantel
-        document.getElementById('id_plantel').addEventListener('change', function() {
-            const idPlantel = this.value;
-            const selectArea = document.getElementById('id_area');
-
-            if (!idPlantel) {
-                selectArea.innerHTML = '<option value="">Selecciona un área</option>';
-                return;
-            }
-
-            // Hacer una llamada AJAX para obtener las áreas del plantel seleccionado
-            fetch('obtener_areas.php?id_plantel=' + idPlantel)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select de áreas
-                    selectArea.innerHTML = '<option value="">Selecciona un área</option>';
-                    // Llenar el select con las áreas obtenidas
-                    data.forEach(area => {
-                        const option = document.createElement('option');
-                        option.value = area.id_area;
-                        option.textContent = area.nombre_area;
-                        selectArea.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error al cargar áreas:', error);
-                    selectArea.innerHTML = '<option value="">Error al cargar áreas</option>';
-                });
-        });
-
-        // Disparar el evento change al cargar la página para llenar las áreas iniciales
-        document.getElementById('id_plantel').dispatchEvent(new Event('change'));
-    </script>
 </body>
 </html>
