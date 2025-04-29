@@ -7,6 +7,6 @@ return [
     'smtp_secure' => 'tls',
     'smtp_port' => 587,
     'from_email' => 'jefecapacitacion@canacintramonclova.org',
-    'from_name' => 'Bolsa de Trabajo'
+    'from_name' => 'Canacintra Monclova - Bolsa de Trabajo'
 ];
 ?>
