@@ -125,13 +125,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // Don't fail the registration if email sending fails
                         }
 
-                        // Store success message in session and redirect
+                        // Store success message in session and redirect to exito.php
                         $_SESSION['mensaje'] = "Registrado exitosamente.";
-                        header("Location: " . $_SERVER['PHP_SELF']);
+                        header("Location: exito.php");
                         exit();
 
                     } catch(PDOException $e) {
-                        $mensaje = "Error: " . $e->getMessage();
+                        // Verificar si el error es por correo duplicado
+                        if ($e->getCode() == 23000 && strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                            $mensaje = "Error: El correo proporcionado ya está registrado. Por favor, usa otro correo.";
+                        } else {
+                            $mensaje = "Error: No se pudo completar el registro. Inténtalo de nuevo más tarde.";
+                        }
+                        // Eliminar el archivo subido si hubo un error
                         if ($ruta_curriculum && file_exists($ruta_curriculum)) {
                             unlink($ruta_curriculum);
                         }

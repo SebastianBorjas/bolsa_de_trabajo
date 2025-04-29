@@ -122,6 +122,27 @@ body {
     z-index: 2;
 }
 
+.content h2 {
+    color: #3f75db;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+}
+
+.content p {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+}
 .mensaje {
     margin-bottom: 20px;
     padding: 10px;
