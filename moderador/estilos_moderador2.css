@@ -118,13 +118,13 @@ body {
 }
 
 .mensaje.success {
-    background: rgba(0, 102, 0, 0.1);
-    color: #006600;
+    background: rgba(0, 102, 0, 0.5);
+    color: #ffffff;
 }
 
 .mensaje.error {
-    background: rgba(230, 46, 35, 0.1);
-    color: #e62e23;
+    background: rgba(230, 46, 35, 0.5);
+    color: #ffffff;
 }
 
 .form-group {
