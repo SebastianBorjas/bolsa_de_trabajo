@@ -330,6 +330,8 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
                   <option value="secundaria">Secundaria</option>
                   <option value="preparatoria">Preparatoria</option>
                   <option value="universidad">Universidad</option>
+                  <option value="maestria">Maestría</option>
+                  <option value="doctorado">Doctorado</option>
                </select>
             </div>
             <div class="form-group">
