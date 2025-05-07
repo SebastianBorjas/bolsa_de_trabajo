@@ -473,6 +473,34 @@ body {
     margin-bottom: 5px;
 }
 
+/* Oculta el radio original y estiliza el label como botón */
+.radio-group label {
+    position: relative;
+    display: inline-block;
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: 2px solid #001164;
+    border-radius: 8px;
+    background-color: #f0f4f8;
+    cursor: pointer;
+    user-select: none;
+    color: #000000;
+    transition: background-color 0.2s, color 0.2s;
+    width: 50px;
+  }
+  .radio-group label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  /* Estado “seleccionado” */
+  .radio-group label:has(input[type="radio"]:checked) {
+    background-color: #001164;
+    color: #ffffff;
+  }
+  
+
 @media screen and (max-width: 480px) {
 
     .background-logo img {
