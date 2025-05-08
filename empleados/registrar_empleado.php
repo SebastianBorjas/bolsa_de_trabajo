@@ -103,7 +103,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $mail->isHTML(true);
                             $mail->Subject = 'Registro - Bolsa de Trabajo';
                             $mail->Body = "<h2>¡Registro Exitoso!</h2><p>Estimado/a $nombre_completo,</p><p>Hemos recibido correctamente tu registro en Bolsa de Trabajo.</p><p>Gracias por tu interés. Nos pondremos en contacto contigo si hay oportunidades que coincidan con tu perfil.</p><p>Atentamente,<br>Canacintra Monclova</p>";
-                            $mail->AltBody = "Registro Exitoso\n\nEstimado/a $nombre_completo,\nHemos recibido correctamente tu registro.\nDetalles:\n- Localidad: " . htmlspecialchars($_POST['id_plantel']) . "\n- Fecha: $fecha_registro\n- Correo: $correo\n- Celular: $celular\n\nGracias por tu interés.";
+                            $mail->AltBody = "Registro Exitoso
+
+Estimado/a $nombre_completo,
+Hemos recibido correctamente tu registro.
+Detalles:
+- Localidad: " . htmlspecialchars($_POST['id_plantel']) . "
+- Fecha: $fecha_registro
+- Correo: $correo
+- Celular: $celular
+
+Gracias por tu interés.";
 
                             $mail->send();
                         } catch (Exception $e) {
@@ -164,7 +174,7 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
       /* Estilos para la pregunta Sí/No */
       .radio-group { margin-top: 10px; }
       .radio-group label { margin-right: 15px; font-weight: normal; cursor: pointer; }
-      .sugerencia-container textarea { width: 100%; height: 100px; padding: 10px; border: 2px solid #001164; border-radius: 10px; resize: none; }
+      .sugerencia-container textarea { width: 100%; height: 100px; padding: 10px; border: 2px solid #001164; border-radius: 10px; resize: none; maxlength="40" }
    </style>
 </head>
 <body>
@@ -219,7 +229,7 @@ $planteles = $stmt_planteles->fetchAll(PDO::FETCH_ASSOC);
                  </div>
                  <div class="sugerencia-container" id="sugerencia-container" style="display: none;">
                    <h3>Otra profesión?</h3>
-                   <textarea id="sugerencia" name="sugerencia" placeholder="Ingresa una sugerencia de área o subárea"></textarea>
+                   <textarea id="sugerencia" name="sugerencia" placeholder="Ingresa una sugerencia de área o subárea" maxlength="40"></textarea>
                  </div>
                </div>
 
